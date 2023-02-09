@@ -1,24 +1,35 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import "./App.css";
+import axios from "axios";
 
 function App() {
+  const [quote, setQuote] = useState<string>("");
+
+  useEffect(() => {
+    fetchAdvice();
+  }, []);
+
+  const fetchAdvice = async (): Promise<void> => {
+    try {
+      const id = Math.random() * 224;
+      const response = await axios.get(
+        `https://api.adviceslip.com/advice/${id}`
+      );
+      const { advice } = await response.data.slip;
+      setQuote(advice);
+    } catch (error) {
+      if (error instanceof Error) console.error(error.message);
+    }
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div className="quote__container">
+        <h1 className="quote__text">{quote}</h1>
+        <button className="quote__button" onClick={() => fetchAdvice()}>
+          <span>GIVE ME ADVICE</span>
+        </button>
+      </div>
     </div>
   );
 }
